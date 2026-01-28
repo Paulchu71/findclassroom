@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中山找教室小幫手</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f8f9fa;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        .form-container {
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        iframe {
+            width: 100%;
+            border: none;
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <h1>中山找教室小幫手</h1>
+    <div class="form-container">
+        <h2>輸入教室代碼</h2>
+        <div class="form-group">
+            <label for="buildingPrefix">選擇教室開頭</label>
+            <select id="buildingPrefix">
+                <option value="行AD">行AD (行政大樓)</option>
+                <option value="圖IL">圖IL (PC0X請輸入000X)(圖資大樓)</option>
+                <option value="西SW">西SW (圖資10樓－新西灣學院)</option>
+                <option value="體GM">體GM (體育館)</option>
+                <option value="國IR">國IR (國際研究大樓)</option>
+                <option value="社SS">社SS (社會科學院)</option>
+                <option value="管CM">管CM (管理學院)</option>
+                <option value="理SC">理SC (理學院)</option>
+                <option value="工EN">工EN (工學院)</option>
+                <option value="理BI">理BI (生科館)</option>
+                <option value="理PH">理PH (物理館)</option>
+                <option value="理CH">理CH (化學館)</option>
+                <option value="工MS">工MS (材料大樓)</option>
+                <option value="工EV">工EV (環工大樓)</option>
+                <option value="工EC">工EC (電資大樓)</option>
+                <option value="通GE">通GE (舊西灣學院)</option>
+                <option value="海ME">海ME (海工館)</option>
+                <option value="海MA">海MA (海洋科學學院)</option>
+                <option value="海MB">海MB (海洋資源館)</option>
+                <option value="文FA">文FA (藝術大樓)</option>
+                <option value="文LA">文LA (文學院)</option>
+
+                <!-- 可根據需求添加其他選項 -->
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="roomCode">輸入教室代碼</label>
+            <input type="text" id="roomCode" placeholder="例如：1008">
+        </div>
+        <button onclick="findClassroom()">查詢教室位置</button>
+        <div id="result" class="result" style="display: none;">
+            <p id="locationText"></p>
+            <img id="floorPlan" alt="樓層平面圖" style="display: none; max-width: 100%; height: auto;">
+            <iframe id="googleMap" height="300" style="display: none;"></iframe>
+        </div>
+    </div>
+
+    <script>
+        function findClassroom() {
+            const buildingPrefix = document.getElementById("buildingPrefix").value;
+            const roomCode = document.getElementById("roomCode").value.trim();
+            const resultDiv = document.getElementById("result");
+            const locationText = document.getElementById("locationText");
+            const floorPlan = document.getElementById("floorPlan");
+            const googleMap = document.getElementById("googleMap");
+
+            // 清空之前的結果
+            resultDiv.style.display = "none";
+            floorPlan.style.display = "none";
+            googleMap.style.display = "none";
+            locationText.textContent = "";
+
+            // 定義各學院樓層範圍
+            const buildingData = {
+                
+                "行AD": {
+                    "name": "行政大樓",
+                    "minFloor": 0,
+                    "maxFloor": 5,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6844405956284!2d120.26557870095279!3d22.62626580812141!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0409ab03bb21%3A0x16f9d38ecbf9b134!2z5ZyL56uL5Lit5bGx5aSn5a24IOihjOaUv-Wkp-aokw!5e0!3m2!1szh-TW!2stw!4v1733801275191!5m2!1szh-TW!2stw"
+                },
+                "圖IL": {
+                    "name": "圖資大樓",
+                    "minFloor": 0,
+                    "maxFloor": 0,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6772772542712!2d120.26517636960057!3d22.627335336591603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e04059155b987%3A0xe149e10185f1be63!2z5ZyL56uL5Lit5bGx5aSn5a24IOWcluabuOmkqA!5e0!3m2!1szh-TW!2stw!4v1733801305628!5m2!1szh-TW!2stw"
+                },
+                "西SW": {
+                    "name": "圖資10樓－新西灣學院",
+                    "minFloor": 1,
+                    "maxFloor": 1,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6772772542712!2d120.26517636960057!3d22.627335336591603!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e04059155b987%3A0xe149e10185f1be63!2z5ZyL56uL5Lit5bGx5aSn5a24IOWcluabuOmkqA!5e0!3m2!1szh-TW!2stw!4v1733801305628!5m2!1szh-TW!2stw"
+                },
+                "體GM": {
+                    "name": "體育館",
+                    "minFloor": 0,
+                    "maxFloor": 3,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6918859702536!2d120.26588921535644!3d22.62515411967836!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0408e234730b%3A0x6e0cb8dfcf17be9d!2z5ZyL56uL5Lit5bGx5aSn5a246auU6IKy6aSo!5e0!3m2!1szh-TW!2stw!4v1733801382133!5m2!1szh-TW!2stw"
+                },
+                "國IR": {
+                    "name": "國際研究大樓",
+                    "minFloor": 0,
+                    "maxFloor": 5,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d460.35033212832906!2d120.26589905951919!3d22.623843344190885!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e05002fca45ef%3A0x17b4b9ee91668756!2z5ZyL56uL5Lit5bGx5aSn5a24IOiPr-eri-W7sw!5e0!3m2!1szh-TW!2stw!4v1733801463073!5m2!1szh-TW!2stw"
+                },
+                "社SS": {
+                    "name": "社會科學院",
+                    "minFloor": 0,
+                    "maxFloor": 7,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d1841.379533342214!2d120.26559462883243!3d22.625470563069808!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e03f12cc7a55d%3A0xb653196619dcb661!2z5ZyL56uL5Lit5bGx5aSn5a2456S-5pyD56eR5a246Zmi!5e0!3m2!1szh-TW!2stw!4v1733801482520!5m2!1szh-TW!2stw"
+                },
+                "管CM": {
+                    "name": "管理學院",
+                    "minFloor": 0,
+                    "maxFloor": 6,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6780127527081!2d120.26451625023148!3d22.627225524609617!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0408fb4e4e7d%3A0xe06d33c3fc8ca87d!2z5ZyL56uL5Lit5bGx5aSn5a24IOizh-ioiueuoeeQhuWtuOezuw!5e0!3m2!1szh-TW!2stw!4v1733801577397!5m2!1szh-TW!2stw"
+                },
+                "理SC": {
+                    "name": "理學院",
+                    "minFloor": 0,
+                    "maxFloor": 4,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6820255678246!2d120.26487298403046!3d22.62662639115166!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0409a6038207%3A0x7e4fbfe5f26e14!2z5ZyL56uL5Lit5bGx5aSn5a24IOeQhuWtuOmZog!5e0!3m2!1szh-TW!2stw!4v1733801589169!5m2!1szh-TW!2stw"
+                },
+                "工EN": {
+                    "name": "工學院",
+                    "minFloor": 0,
+                    "maxFloor": 8,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6798036060947!2d120.26495076809191!3d22.626958143058637!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e040904390e13%3A0x25f1c2400c50f2af!2z5ZyL56uL5Lit5bGx5aSn5a24IOW3peWtuOmZog!5e0!3m2!1szh-TW!2stw!4v1733801601405!5m2!1szh-TW!2stw"
+                },
+                "理BI": {
+                    "name": "生科館",
+                    "minFloor": 0,
+                    "maxFloor": 5,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6828214882079!2d120.26567228231691!3d22.626507554453244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e05864b2a02c7%3A0x2af34cfc8627d1e1!2z5ZyL56uL5Lit5bGx5aSn5a24IOeUn-enkemkqA!5e0!3m2!1szh-TW!2stw!4v1733801613293!5m2!1szh-TW!2stw"
+                },
+                "理PH": {
+                    "name": "物理館",
+                    "minFloor": 0,
+                    "maxFloor": 4,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6828214882079!2d120.26567228231691!3d22.626507554453244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e057faaaf17f9%3A0x44b53f501aa5a4a3!2z5ZyL56uL5Lit5bGx5aSn5a24IOWMluWtuOmkqA!5e0!3m2!1szh-TW!2stw!4v1733801639155!5m2!1szh-TW!2stw"
+                },
+                "理CH": {
+                    "name": "化學館",
+                    "minFloor": 0,
+                    "maxFloor": 4,
+                    "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6828214882079!2d120.26567228231691!3d22.626507554453244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e057faaaf17f9%3A0x44b53f501aa5a4a3!2z5ZyL56uL5Lit5bGx5aSn5a24IOWMluWtuOmkqA!5e0!3m2!1szh-TW!2stw!4v1733801639155!5m2!1szh-TW!2stw"
+                },
+                "工MS": { "name": "材料大樓", "minFloor": 0, "maxFloor": 6, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6828214882079!2d120.26567228231691!3d22.626507554453244!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0409145aa783%3A0x43df047fa8cda36b!2z5ZyL56uL5Lit5bGx5aSn5a24IOadkOaWmeWkp-aokw!5e0!3m2!1szh-TW!2stw!4v1733801650502!5m2!1szh-TW!2stw" },
+                "工EV": { "name": "環工大樓", "minFloor": 0, "maxFloor": 7, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6763132654446!2d120.26644298539121!3d22.627479262065464!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0409ad93f23b%3A0x54d424e464fd2858!2sBuilding%20of%20Environmental%20Engineering%2C%20NSYSU!5e0!3m2!1szh-TW!2stw!4v1733804109674!5m2!1szh-TW!2stw" },
+                "工EC": { "name": "電資大樓", "minFloor": 1, "maxFloor": 5, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d460.3390540497515!2d120.2666191020158!3d22.627211289028434!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e04094140728b%3A0xfe04f155f3760f43!2z5ZyL56uL5Lit5bGx5aSn5a24IOmbu-izh-Wkp-aokw!5e0!3m2!1szh-TW!2stw!4v1733801688038!5m2!1szh-TW!2stw" },
+                "通GE": { "name": "舊西灣學院", "minFloor": 0, "maxFloor": 2, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d230.165885574567!2d120.26237651778001!3d22.62938591134327!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e05005420df2d%3A0x9c942167e4d9a998!2z6KW_54Gj5a246ZmiIO-8iOmAmuitmO-8iQ!5e0!3m2!1szh-TW!2stw!4v1733801717122!5m2!1szh-TW!2stw" },
+                "海ME": { "name": "海工館", "minFloor": 0, "maxFloor": 5, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d460.3318799769287!2d120.26208147483632!3d22.629353417595155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e05813aea26d3%3A0x203cb505f6d63592!2z5ZyL56uL5Lit5bGx5aSn5a24IOa1t-W3pemkqA!5e0!3m2!1szh-TW!2stw!4v1733801731492!5m2!1szh-TW!2stw" },
+                "海MA": { "name": "海洋科學學院", "minFloor": 0, "maxFloor": 5, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6562185635207!2d120.26118561709954!3d22.630479244090935!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0405f6be222f%3A0xa995a0c613ab4714!2z5ZyL56uL5Lit5bGx5aSn5a245rW35rSL56eR5a245a246Zmi!5e0!3m2!1szh-TW!2stw!4v1733801744702!5m2!1szh-TW!2stw" },                    
+                "海MB": { "name": "海洋資源館", "minFloor": 0, "maxFloor": 5, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d920.6579930347318!2d120.26165500367713!3d22.630214344568124!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e0405f9e8f323%3A0x936ad6db78db724d!2z5Lit5bGx5aSn5a245rW35rSL6LOH5rqQ6aSo!5e0!3m2!1szh-TW!2stw!4v1733801756102!5m2!1szh-TW!2stw" },
+                "文FA": { "name": "藝術大樓", "minFloor": 0, "maxFloor": 4, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3682.5326953483423!2d120.25990620415011!3d22.633919177975294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e040550371e8f%3A0x5159283073b82e1b!2z5ZyL56uL5Lit5bGx5aSn5a24IOiXneihk-Wkp-aokw!5e0!3m2!1szh-TW!2stw!4v1733801771238!5m2!1szh-TW!2stw" },
+                "文LA": { "name": "文學院", "minFloor": 0, "maxFloor": 3, "mapUrl": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3682.5326953483423!2d120.25990620415011!3d22.633919177975294!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x346e04053672737d%3A0xea62b4b4253edf86!2z5Lit5bGx5aSn5a24IOaWh-WtuOmZog!5e0!3m2!1szh-TW!2stw!4v1733801780059!5m2!1szh-TW!2stw" }
+
+                  
+            };
+
+            // 檢查輸入是否有效
+            if (!roomCode || roomCode.length !== 4 || isNaN(roomCode)) {
+                alert("請輸入正確的4位數教室代碼！");
+                return;
+            }
+
+            const firstDigit = parseInt(roomCode.charAt(0), 10); // 獲取樓層數字
+            const buildingInfo = buildingData[buildingPrefix]; // 獲取建築物相關資訊
+
+            if (!buildingInfo) {
+                alert("無法辨識的教室開頭！");
+                return;
+            }
+
+            // 檢查樓層範圍
+            if (firstDigit < buildingInfo.minFloor || firstDigit > buildingInfo.maxFloor) {
+                alert(`${buildingInfo.name} 的樓層範圍為 ${buildingInfo.minFloor} 至 ${buildingInfo.maxFloor}！請重新輸入有效的教室代碼。`);
+                return;
+            }
+
+            const floor = firstDigit === 0 ? "地下室" : `${firstDigit}樓`;
+            const floorPlanUrl = `images/${buildingPrefix.toLowerCase()}_floor_${firstDigit}.png`; // 假設的樓層圖檔路徑
+
+            // 顯示結果
+            locationText.textContent = `教室位於 ${buildingInfo.name} 的 ${floor}。`;
+            floorPlan.src = floorPlanUrl;
+            floorPlan.style.display = "block";
+            googleMap.src = buildingInfo.mapUrl;
+            googleMap.style.display = "block";
+            resultDiv.style.display = "block";
+        }
+    </script>
+</body>
+</html>
+
